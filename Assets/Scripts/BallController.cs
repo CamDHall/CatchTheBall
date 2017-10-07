@@ -18,13 +18,15 @@ public class BallController : MonoBehaviour {
 
     private void FixedUpdate()
     {
-        Vector2 pt1 = transform.TransformPoint(bCollider.offset + new Vector2(bCollider.size.x / 2, -bCollider.size.y / 2));
-        Vector2 pt2 = transform.TransformPoint(bCollider.offset - (bCollider.size / 2) + new Vector2(0, 0));
 
-        if(Physics2D.OverlapArea(pt1, pt2, LayerMask.GetMask("Player")) != null)
+    }
+
+    private void OnCollisionEnter2D(Collision2D col)
+    {
+        if(col.gameObject.tag == "Player")
         {
-            transform.parent = Physics2D.OverlapArea(pt1, pt2, LayerMask.GetMask("Player")).gameObject.transform;
-            transform.position = Vector2.Lerp(transform.position, Vector2.zero, Time.deltaTime);
+            transform.parent = col.gameObject.transform;
+            transform.localPosition = Vector2.zero;
         }
     }
 }

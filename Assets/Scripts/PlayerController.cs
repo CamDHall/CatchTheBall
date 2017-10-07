@@ -4,10 +4,11 @@ using UnityEngine;
 
 public class PlayerController : MonoBehaviour {
 
+    public float dashSpeed;
+
+    // Variables for each player
     public string playerTeam;
-    public int speed;
-    string playerHAxis;
-    string playerVAxis;
+    string playerHAxis, playerVAxis, playerDashBtn;
     Vector2 Pos;
     BoxCollider2D bCollider;
     Rigidbody2D rb;
@@ -16,6 +17,7 @@ public class PlayerController : MonoBehaviour {
 	void Start () {
         playerHAxis = playerTeam + "Horizontal";
         playerVAxis = playerTeam + "Vertical";
+        playerDashBtn = playerTeam + "Dash";
         Pos = transform.position;
         bCollider = GetComponent<BoxCollider2D>();
         rb = GetComponent<Rigidbody2D>();
@@ -24,7 +26,15 @@ public class PlayerController : MonoBehaviour {
 	void FixedUpdate () {
         if (!wallColliding)
         {
-            Pos += new Vector2(Input.GetAxis(playerHAxis), Input.GetAxis(playerVAxis));
+            
+            if(Input.GetButton(playerDashBtn))
+            {
+                Pos += new Vector2(Input.GetAxis(playerHAxis), Input.GetAxis(playerVAxis)) * dashSpeed;
+            } else
+            {
+                Pos += new Vector2(Input.GetAxis(playerHAxis), Input.GetAxis(playerVAxis));
+            }
+
             rb.MovePosition(Pos);
         }
     }
