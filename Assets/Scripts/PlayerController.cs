@@ -9,42 +9,42 @@ public class PlayerController : MonoBehaviour {
     string playerHAxis;
     string playerVAxis;
     Vector2 Pos;
+    BoxCollider2D bCollider;
+    Rigidbody2D rb;
+    bool wallColliding = false;
 
 	void Start () {
         playerHAxis = playerTeam + "Horizontal";
         playerVAxis = playerTeam + "Vertical";
         Pos = transform.position;
+        bCollider = GetComponent<BoxCollider2D>();
+        rb = GetComponent<Rigidbody2D>();
 	}
 	
 	void FixedUpdate () {
-        // Replace
-        //
-        //
-        /*
-		if(Input.GetKey(KeyCode.A))
+        if (!wallColliding)
         {
-            transform.Translate(Vector2.left * (speed * Time.deltaTime));
+            Pos += new Vector2(Input.GetAxis(playerHAxis), Input.GetAxis(playerVAxis));
+            rb.MovePosition(Pos);
         }
+    }
 
-        if(Input.GetKey(KeyCode.D))
+    IEnumerator BouncePlayer()
+    {
+        rb.velocity = new Vector2(-Pos.x, -Pos.y) * 1.1f;
+        yield return new WaitForSeconds(0.25f);
+
+        rb.velocity = Vector2.zero;
+        Pos = transform.position;
+        wallColliding = false;
+    }
+
+    private void OnCollisionEnter2D(Collision2D col)
+    {
+        if(col.gameObject.tag == "Wall")
         {
-            transform.Translate(Vector2.right * (speed * Time.deltaTime));
+            StartCoroutine("BouncePlayer");
+            wallColliding = true;
         }
-
-        if (Input.GetKey(KeyCode.S))
-        {
-            transform.Translate(Vector2.down * (speed * Time.deltaTime));
-        }
-
-        if (Input.GetKey(KeyCode.W))
-        {
-            transform.Translate(Vector2.up * (speed * Time.deltaTime));
-        }
-        */
-
-        Debug.Log(Input.GetAxis(playerHAxis));
-
-        Pos += new Vector2(Input.GetAxis(playerHAxis), Input.GetAxis(playerVAxis));
-        GetComponent<Rigidbody2D>().MovePosition(Pos);
     }
 }
