@@ -8,13 +8,20 @@ public class PlayerController : MonoBehaviour {
 
     // Variables for each player
     public string playerTeam;
-    string playerHAxis, playerVAxis, playerDashBtn;
+    public string playerHAxis, playerVAxis, playerDashBtn;
     Vector2 Pos;
+
+    // Components
     BoxCollider2D bCollider;
-    Rigidbody2D rb;
+    public Rigidbody2D rb;
+
+    // Flags
     bool wallColliding = false;
+    public bool holdingBall;
 
 	void Start () {
+        holdingBall = false;
+
         playerHAxis = playerTeam + "Horizontal";
         playerVAxis = playerTeam + "Vertical";
         playerDashBtn = playerTeam + "Dash";
@@ -22,14 +29,22 @@ public class PlayerController : MonoBehaviour {
         bCollider = GetComponent<BoxCollider2D>();
         rb = GetComponent<Rigidbody2D>();
 	}
-	
-	void FixedUpdate () {
+
+    void FixedUpdate () {
         if (!wallColliding)
         {
-            
-            if(Input.GetButton(playerDashBtn))
+            if(Input.GetButtonDown(playerDashBtn) && holdingBall)
             {
-                Pos += new Vector2(Input.GetAxis(playerHAxis), Input.GetAxis(playerVAxis)) * dashSpeed;
+                BallController.Instance.ThrowBall(this.gameObject);
+            }
+            // If holding a times the axis by the dash speed
+            if (Input.GetButton(playerDashBtn))
+            {
+                // Check if holding ball
+                if (!holdingBall)
+                {
+                    Pos += new Vector2(Input.GetAxis(playerHAxis), Input.GetAxis(playerVAxis)) * dashSpeed;
+                }
             } else
             {
                 Pos += new Vector2(Input.GetAxis(playerHAxis), Input.GetAxis(playerVAxis));
