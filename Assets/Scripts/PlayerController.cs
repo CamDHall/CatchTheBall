@@ -34,7 +34,6 @@ public class PlayerController : MonoBehaviour {
     {
         if (Input.GetButtonDown(playerDashBtn) && holdingBall)
         {
-            Debug.Log("HERE");
             BallController.Instance.ThrowBall(this.gameObject);
         }
     }

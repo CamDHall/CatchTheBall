@@ -49,8 +49,35 @@ public class BallController : MonoBehaviour {
         remainingForce = throwForce; // Reset used force var
 
         thrower.GetComponent<PlayerController>().holdingBall = false;
-        directionOfBall = new Vector3(Input.GetAxis(thrower.GetComponent<PlayerController>().playerHAxis), 
-            Input.GetAxis(thrower.GetComponent<PlayerController>().playerVAxis), 0);
+
+        int x, y;
+
+        // check pos or neg 
+        if (Input.GetAxis(thrower.GetComponent<PlayerController>().playerHAxis) < 0)
+            x = -1;
+        else if (Input.GetAxis(thrower.GetComponent<PlayerController>().playerHAxis) == 0)
+            x = 0;
+        else
+            x = 1;
+
+        if (Input.GetAxis(thrower.GetComponent<PlayerController>().playerVAxis) < 0)
+            y = -1;
+        else if (Input.GetAxis(thrower.GetComponent<PlayerController>().playerVAxis) == 0)
+            y = 0;
+        else
+            y = 1;
+
+        directionOfBall = new Vector3(x, y, 0);
+
+        thrower.GetComponent<PlayerController>().holdingBall = false;
+        StartCoroutine("BallThrown");
+    }
+
+    IEnumerator BallThrown()
+    {
+        yield return new WaitForSeconds(0.25f);
+
+        throwingBall = false;
     }
 
     private void OnCollisionEnter2D(Collision2D col)
