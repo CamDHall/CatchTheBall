@@ -30,13 +30,18 @@ public class PlayerController : MonoBehaviour {
         rb = GetComponent<Rigidbody2D>();
 	}
 
+    private void Update()
+    {
+        if (Input.GetButtonDown(playerDashBtn) && holdingBall)
+        {
+            Debug.Log("HERE");
+            BallController.Instance.ThrowBall(this.gameObject);
+        }
+    }
+
     void FixedUpdate () {
         if (!wallColliding)
         {
-            if(Input.GetButtonDown(playerDashBtn) && holdingBall)
-            {
-                BallController.Instance.ThrowBall(this.gameObject);
-            }
             // If holding a times the axis by the dash speed
             if (Input.GetButton(playerDashBtn))
             {

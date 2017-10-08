@@ -6,7 +6,10 @@ public class BallController : MonoBehaviour {
 
     public static BallController Instance;
     BoxCollider2D bCollider;
-    Rigidbody2D rb;
+
+    public float throwForce;
+    public float forceDeceleration;
+    float remainingForce;
 
     Vector3 directionOfBall; // For throwing
 
@@ -28,7 +31,11 @@ public class BallController : MonoBehaviour {
                 throwingBall = false;
             } else
             {
-                transform.Translate(directionOfBall * 2);
+                if(remainingForce > 0)
+                {
+                    remainingForce -= Time.deltaTime * forceDeceleration;
+                    transform.Translate(directionOfBall * remainingForce);
+                }
             }
         }
 
@@ -39,10 +46,11 @@ public class BallController : MonoBehaviour {
         transform.SetParent(null);
         throwingBall = true;
 
+        remainingForce = throwForce; // Reset used force var
+
         thrower.GetComponent<PlayerController>().holdingBall = false;
         directionOfBall = new Vector3(Input.GetAxis(thrower.GetComponent<PlayerController>().playerHAxis), 
             Input.GetAxis(thrower.GetComponent<PlayerController>().playerVAxis), 0);
-        Debug.Log(directionOfBall.x);
     }
 
     private void OnCollisionEnter2D(Collision2D col)
