@@ -115,15 +115,25 @@ public class BallController : MonoBehaviour {
         rebounding = false;
     }
 
+    public void ParentBall(GameObject newParent)
+    {
+        moving = false;
+        if(transform.parent != null)
+        {
+            transform.SetParent(null);
+        }
+
+        transform.parent = newParent.transform;
+        transform.localPosition = Vector2.zero;
+
+        newParent.GetComponent<PlayerController>().holdingBall = true;
+    }
+
     private void OnCollisionEnter2D(Collision2D col)
     {
         if(col.gameObject.tag == "Player" && !throwingBall)
         {
-            moving = false;
-            transform.parent = col.gameObject.transform;
-            transform.localPosition = Vector2.zero;
-
-            col.gameObject.GetComponent<PlayerController>().holdingBall = true;
+            ParentBall(col.gameObject);
         }
     }
 }

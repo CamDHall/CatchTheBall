@@ -75,5 +75,11 @@ public class PlayerController : MonoBehaviour {
             StartCoroutine("BouncePlayer");
             wallColliding = true;
         }
+
+        if(col.gameObject.tag == "Player" && col.gameObject.GetComponentInChildren<Transform>() != null)
+        {
+            Debug.Log("HERE");
+            BallController.Instance.ParentBall(this.gameObject);
+        }
     }
 }
