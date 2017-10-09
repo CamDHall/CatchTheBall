@@ -7,14 +7,16 @@ public class BallController : MonoBehaviour {
     public static BallController Instance;
     BoxCollider2D bCollider;
 
+    bool rebounding;
+
     public float throwForce;
     public float decelerationSpeed;
     float force, decSpeed;
 
+
     Vector3 directionOfBall; // For throwing
 
-    bool throwingBall = false;
-    bool ballMoving = false;
+    bool throwingBall = false, moving = false;
 
 	void Start () {
         Instance = this;
@@ -23,25 +25,34 @@ public class BallController : MonoBehaviour {
 
     private void FixedUpdate()
     {
-        if (throwingBall)
+        // not held
+        if (transform.parent == null)
         {
             Vector2 pt1 = transform.TransformPoint(bCollider.offset + bCollider.size);//(box.size / 2));
             Vector2 pt2 = transform.TransformPoint(bCollider.offset - (bCollider.size) + new Vector2(0, 0));
             if (Physics2D.OverlapArea(pt1, pt2, LayerMask.GetMask("Wall")))
             {
-                throwingBall = false;
-            } else
-            {
-                if (ballMoving)
+                if (!rebounding)
                 {
-                    if (force > 0)
-                    {
-                        decSpeed = (decSpeed * Time.deltaTime) + (Time.deltaTime / 5);
-                        force -= decSpeed;
-                        Debug.Log(force);
-                        transform.Translate(directionOfBall * force);
-                    }
+                    Debug.Log("WALL");
+                    StartCoroutine("Rebound");
+                    moving = true;
+                    rebounding = true;
                 }
+            }
+
+            if (force > 0)
+            {
+                if (moving)
+                {
+                    decSpeed = (decSpeed * Time.deltaTime) + (Time.deltaTime / 5);
+                    force -= decSpeed;
+                    transform.Translate(directionOfBall * force);
+                }
+            }
+            else
+            {
+                moving = false;
             }
         }
 
@@ -49,12 +60,11 @@ public class BallController : MonoBehaviour {
 
     public void ThrowBall(GameObject thrower)
     {
+        moving = true;
         force = throwForce;
         decSpeed = decelerationSpeed;
         transform.SetParent(null);
         throwingBall = true;
-
-        ballMoving = true;
 
         thrower.GetComponent<PlayerController>().holdingBall = false;
 
@@ -95,11 +105,21 @@ public class BallController : MonoBehaviour {
         throwingBall = false;
     }
 
+    IEnumerator Rebound()
+    {
+        directionOfBall *= -1;
+        throwingBall = false;
+        force /= 2;
+
+        yield return new WaitForSeconds(Time.deltaTime);
+        rebounding = false;
+    }
+
     private void OnCollisionEnter2D(Collision2D col)
     {
         if(col.gameObject.tag == "Player" && !throwingBall)
         {
-
+            moving = false;
             transform.parent = col.gameObject.transform;
             transform.localPosition = Vector2.zero;
 
