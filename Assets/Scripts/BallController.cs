@@ -8,12 +8,13 @@ public class BallController : MonoBehaviour {
     BoxCollider2D bCollider;
 
     public float throwForce;
-    public float forceDeceleration;
-    float remainingForce;
+    public float decelerationSpeed;
+    float force, decSpeed;
 
     Vector3 directionOfBall; // For throwing
 
     bool throwingBall = false;
+    bool ballMoving = false;
 
 	void Start () {
         Instance = this;
@@ -31,10 +32,15 @@ public class BallController : MonoBehaviour {
                 throwingBall = false;
             } else
             {
-                if(remainingForce > 0)
+                if (ballMoving)
                 {
-                    remainingForce -= Time.deltaTime * forceDeceleration;
-                    transform.Translate(directionOfBall * remainingForce);
+                    if (force > 0)
+                    {
+                        decSpeed = (decSpeed * Time.deltaTime) + (Time.deltaTime / 5);
+                        force -= decSpeed;
+                        Debug.Log(force);
+                        transform.Translate(directionOfBall * force);
+                    }
                 }
             }
         }
@@ -43,14 +49,16 @@ public class BallController : MonoBehaviour {
 
     public void ThrowBall(GameObject thrower)
     {
+        force = throwForce;
+        decSpeed = decelerationSpeed;
         transform.SetParent(null);
         throwingBall = true;
 
-        remainingForce = throwForce; // Reset used force var
+        ballMoving = true;
 
         thrower.GetComponent<PlayerController>().holdingBall = false;
 
-        int x, y;
+        float x, y;
 
         // check pos or neg 
         if (Input.GetAxis(thrower.GetComponent<PlayerController>().playerHAxis) < 0)
@@ -66,6 +74,13 @@ public class BallController : MonoBehaviour {
             y = 0;
         else
             y = 1;
+
+        // Check for diag
+        if (x != 0 && y != 0)
+        {
+            x *= 0.5f;
+            y *= 0.5f;
+        }
 
         directionOfBall = new Vector3(x, y, 0);
 
