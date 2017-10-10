@@ -39,6 +39,15 @@ public class PlayerController : MonoBehaviour {
     }
 
     void FixedUpdate () {
+        // Change score
+        if (holdingBall)
+        {
+            if (playerTeam == "Player1" || playerTeam == "Player2")
+                GameManager.Instance.leftTeamScore += Time.deltaTime * GameManager.Instance.scoringValue;
+            else
+                GameManager.Instance.rightTeamScore += Time.deltaTime * GameManager.Instance.scoringValue;
+        }
+
         if (!wallColliding)
         {
             // If holding a times the axis by the dash speed
