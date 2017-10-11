@@ -11,6 +11,10 @@ public class PlayerController : MonoBehaviour {
     public string playerHAxis, playerVAxis, playerDashBtn;
     Vector2 Pos;
 
+    bool inEnemyGoal = false;
+    public float debuffSpeed;
+    float speedDebuff;
+
     // Components
     BoxCollider2D bCollider;
     public Rigidbody2D rb;
@@ -39,10 +43,35 @@ public class PlayerController : MonoBehaviour {
     }
 
     void FixedUpdate () {
+        // Slow speed inside enemy goal
+        if (playerTeam == "Player1")
+        {
+            Vector2 pt1 = transform.TransformPoint(bCollider.offset + new Vector2(bCollider.size.x / 2, -bCollider.size.y / 2));//(box.size / 2));
+            Vector2 pt2 = transform.TransformPoint(bCollider.offset - (bCollider.size / 2) + new Vector2(0, 0));
+            inEnemyGoal = Physics2D.OverlapArea(pt1, pt2, LayerMask.GetMask("RightGoal")) != null;
+
+            Debug.Log(Physics2D.OverlapArea(pt1, pt2, LayerMask.GetMask("RightGoal")) != null);
+
+            if (inEnemyGoal)
+                speedDebuff = debuffSpeed;
+            else
+                speedDebuff = 1;
+        } else
+        {
+            Vector2 pt1 = transform.TransformPoint(bCollider.offset + new Vector2(bCollider.size.x / 2, -bCollider.size.y / 2));//(box.size / 2));
+            Vector2 pt2 = transform.TransformPoint(bCollider.offset - (bCollider.size / 2) + new Vector2(0, 0));
+            inEnemyGoal = Physics2D.OverlapArea(pt1, pt2, LayerMask.GetMask("LeftGoal")) != null;
+
+            if (inEnemyGoal)
+                speedDebuff = debuffSpeed;
+            else
+                speedDebuff = 1;
+        }
+
         // Change score
         if (holdingBall)
         {
-            if (playerTeam == "Player1" || playerTeam == "Player2")
+            if (playerTeam == "Player1")
                 GameManager.Instance.leftTeamScore += Time.deltaTime * GameManager.Instance.scoringValue;
             else
                 GameManager.Instance.rightTeamScore += Time.deltaTime * GameManager.Instance.scoringValue;
@@ -56,11 +85,11 @@ public class PlayerController : MonoBehaviour {
                 // Check if holding ball
                 if (!holdingBall)
                 {
-                    Pos += new Vector2(Input.GetAxis(playerHAxis), Input.GetAxis(playerVAxis)) * dashSpeed;
+                    Pos += new Vector2(Input.GetAxis(playerHAxis) * speedDebuff, speedDebuff * Input.GetAxis(playerVAxis)) * dashSpeed;
                 }
             } else
             {
-                Pos += new Vector2(Input.GetAxis(playerHAxis), Input.GetAxis(playerVAxis));
+                Pos += new Vector2(Input.GetAxis(playerHAxis) * speedDebuff, Input.GetAxis(playerVAxis) * speedDebuff);
             }
 
             rb.MovePosition(Pos);
@@ -87,7 +116,6 @@ public class PlayerController : MonoBehaviour {
 
         if(col.gameObject.tag == "Player" && col.gameObject.GetComponentInChildren<Transform>() != null)
         {
-            Debug.Log("HERE");
             BallController.Instance.ParentBall(this.gameObject);
         }
     }
