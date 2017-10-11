@@ -34,7 +34,6 @@ public class BallController : MonoBehaviour {
             {
                 if (!rebounding)
                 {
-                    Debug.Log("WALL");
                     StartCoroutine("Rebound");
                     moving = true;
                     rebounding = true;
