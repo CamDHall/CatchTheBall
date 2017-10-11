@@ -117,7 +117,7 @@ public class BallController : MonoBehaviour {
     public void ParentBall(GameObject newParent)
     {
         moving = false;
-        if(transform.parent != null)
+        if (transform.parent != null)
         {
             transform.SetParent(null);
         }
@@ -125,6 +125,17 @@ public class BallController : MonoBehaviour {
         transform.parent = newParent.transform;
         transform.localPosition = Vector2.zero;
 
+        newParent.GetComponent<PlayerController>().holdingBall = true;
+    }
+
+    public void ParentBall(GameObject oldParent, GameObject newParent)
+    {
+        moving = false;
+
+        transform.parent = newParent.transform;
+        transform.localPosition = Vector2.zero;
+
+        oldParent.GetComponent<PlayerController>().holdingBall = false;
         newParent.GetComponent<PlayerController>().holdingBall = true;
     }
 

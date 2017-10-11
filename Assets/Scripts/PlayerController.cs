@@ -23,6 +23,8 @@ public class PlayerController : MonoBehaviour {
     bool wallColliding = false;
     public bool holdingBall;
 
+    public float tagBackTimer = 0;
+
 	void Start () {
         holdingBall = false;
 
@@ -49,8 +51,6 @@ public class PlayerController : MonoBehaviour {
             Vector2 pt1 = transform.TransformPoint(bCollider.offset + new Vector2(bCollider.size.x / 2, -bCollider.size.y / 2));//(box.size / 2));
             Vector2 pt2 = transform.TransformPoint(bCollider.offset - (bCollider.size / 2) + new Vector2(0, 0));
             inEnemyGoal = Physics2D.OverlapArea(pt1, pt2, LayerMask.GetMask("RightGoal")) != null;
-
-            Debug.Log(Physics2D.OverlapArea(pt1, pt2, LayerMask.GetMask("RightGoal")) != null);
 
             if (inEnemyGoal)
                 speedDebuff = debuffSpeed;
@@ -114,9 +114,14 @@ public class PlayerController : MonoBehaviour {
             wallColliding = true;
         }
 
-        if(col.gameObject.tag == "Player" && col.gameObject.GetComponentInChildren<Transform>() != null)
+        if(col.gameObject.tag == "Player" && col.gameObject.transform.childCount > 0)
         {
-            BallController.Instance.ParentBall(this.gameObject);
+            Debug.Log(col.gameObject);
+            if (tagBackTimer <= Time.time)
+            {
+                col.gameObject.GetComponent<PlayerController>().tagBackTimer = Time.time + 3f;
+                BallController.Instance.ParentBall(col.gameObject, this.gameObject);
+            }
         }
     }
 }
