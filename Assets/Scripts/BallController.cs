@@ -4,6 +4,9 @@ using UnityEngine;
 
 public class BallController : MonoBehaviour {
 
+    // Juice
+    TrailRenderer tr;
+
     public static BallController Instance;
     BoxCollider2D bCollider;
 
@@ -21,6 +24,7 @@ public class BallController : MonoBehaviour {
 	void Start () {
         Instance = this;
         bCollider = GetComponent<BoxCollider2D>();
+        tr = GetComponent<TrailRenderer>();
 	}
 
     private void FixedUpdate()
@@ -95,6 +99,7 @@ public class BallController : MonoBehaviour {
 
         thrower.GetComponent<PlayerController>().holdingBall = false;
         StartCoroutine("BallThrown");
+        tr.enabled = true;
     }
 
     IEnumerator BallThrown()
@@ -116,6 +121,7 @@ public class BallController : MonoBehaviour {
 
     public void ParentBall(GameObject newParent)
     {
+        tr.enabled = false;
         moving = false;
         if (transform.parent != null)
         {
@@ -130,6 +136,7 @@ public class BallController : MonoBehaviour {
 
     public void ParentBall(GameObject oldParent, GameObject newParent)
     {
+        tr.enabled = false;
         moving = false;
 
         transform.parent = newParent.transform;
@@ -139,7 +146,7 @@ public class BallController : MonoBehaviour {
         newParent.GetComponent<PlayerController>().holdingBall = true;
     }
 
-    private void OnCollisionEnter2D(Collision2D col)
+    private void OnTriggerEnter2D(Collider2D col)
     {
         if(col.gameObject.tag == "Player" && !throwingBall)
         {
