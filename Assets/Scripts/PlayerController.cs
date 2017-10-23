@@ -5,6 +5,7 @@ using UnityEngine;
 public class PlayerController : MonoBehaviour {
 
     public float dashSpeed;
+    public float ballSlowerDebuff;
 
     public ParticleSystem ps;
 
@@ -54,28 +55,23 @@ public class PlayerController : MonoBehaviour {
     }
 
     void FixedUpdate () {
-        // Slow speed inside enemy goal
+        // Slow speed inside your goal
         if (playerTeam == "Player1" || playerTeam == "Player2")
         {
             Vector2 pt1 = transform.TransformPoint(bCollider.offset + new Vector2(bCollider.size.x / 2, -bCollider.size.y / 2));//(box.size / 2));
             Vector2 pt2 = transform.TransformPoint(bCollider.offset - (bCollider.size / 2) + new Vector2(0, 0));
             inOwnGoal = Physics2D.OverlapArea(pt1, pt2, LayerMask.GetMask("LeftGoal")) != null;
-
-            if (inOwnGoal)
-                speedDebuff = debuffSpeed;
-            else
-                speedDebuff = 1;
         } else
         {
             Vector2 pt1 = transform.TransformPoint(bCollider.offset + new Vector2(bCollider.size.x / 2, -bCollider.size.y / 2));//(box.size / 2));
             Vector2 pt2 = transform.TransformPoint(bCollider.offset - (bCollider.size / 2) + new Vector2(0, 0));
             inOwnGoal = Physics2D.OverlapArea(pt1, pt2, LayerMask.GetMask("RightGoal")) != null;
-
-            if (inOwnGoal)
-                speedDebuff = debuffSpeed;
-            else
-                speedDebuff = 1;
         }
+
+        if (inOwnGoal)
+            speedDebuff = debuffSpeed;
+        else
+            speedDebuff = 1;
 
         // Change score
         if (holdingBall)
@@ -94,14 +90,23 @@ public class PlayerController : MonoBehaviour {
                 // Check if holding ball
                 if (!holdingBall)
                 {
-                    Pos += new Vector2(Input.GetAxis(playerHAxis), Input.GetAxis(playerVAxis)) * speedDebuff * dashSpeed;
+                    Pos += new Vector2(Input.GetAxis(playerHAxis) * speedDebuff * dashSpeed, 
+                        Input.GetAxis(playerVAxis) * speedDebuff * dashSpeed);
                 } else
                 {
-                    Pos += new Vector2(Input.GetAxis(playerHAxis), Input.GetAxis(playerVAxis) * speedDebuff);
+                    Pos += new Vector2(Input.GetAxis(playerHAxis) * speedDebuff * dashSpeed * ballSlowerDebuff, 
+                        Input.GetAxis(playerVAxis) * speedDebuff * dashSpeed * ballSlowerDebuff);
                 }
             } else
             {
-                Pos += new Vector2(Input.GetAxis(playerHAxis), Input.GetAxis(playerVAxis) * speedDebuff);
+                if(holdingBall)
+                {
+                    Pos += new Vector2(Input.GetAxis(playerHAxis) * speedDebuff * ballSlowerDebuff, 
+                        Input.GetAxis(playerVAxis) * speedDebuff * ballSlowerDebuff);
+                } else
+                {
+                    Pos += new Vector2(Input.GetAxis(playerHAxis) * speedDebuff, Input.GetAxis(playerVAxis) * speedDebuff);
+                }
             }
 
             rb.MovePosition(Pos);
@@ -123,9 +128,11 @@ public class PlayerController : MonoBehaviour {
         if(col.gameObject.tag == "Wall")
         {
             StartCoroutine("BouncePlayer");
-            Instantiate(ps, transform.position, Quaternion.identity);
 
             ps.startColor = Color.grey;
+            Instantiate(ps, transform.position, Quaternion.identity);
+
+            CamControl.me.Shake(0.4f, 3);
 
             wallColliding = true;
         }
@@ -137,9 +144,9 @@ public class PlayerController : MonoBehaviour {
             {
                 col.gameObject.GetComponent<PlayerController>().tagBackTimer = Time.time + 1.5f;
                 BallController.Instance.ParentBall(col.gameObject, this.gameObject);
-                Instantiate(ps,transform.position, Quaternion.identity);
 
                 ps.startColor = GetComponent<SpriteRenderer>().color;
+                Instantiate(ps,transform.position, Quaternion.identity);
 
                 // Stun player
                 if (!pc.stunned)
