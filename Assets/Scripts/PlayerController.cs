@@ -6,6 +6,8 @@ public class PlayerController : MonoBehaviour {
 
     public float dashSpeed;
 
+    public ParticleSystem ps;
+
     // Variables for each player
     public string playerTeam;
     public string playerHAxis, playerVAxis, playerDashBtn;
@@ -129,14 +131,17 @@ public class PlayerController : MonoBehaviour {
             PlayerController pc = col.gameObject.GetComponent<PlayerController>();
             if (tagBackTimer <= Time.time)
             {
-                col.gameObject.GetComponent<PlayerController>().tagBackTimer = Time.time + 3f;
+                col.gameObject.GetComponent<PlayerController>().tagBackTimer = Time.time + 1.5f;
                 BallController.Instance.ParentBall(col.gameObject, this.gameObject);
+                Instantiate(ps,transform.position, Quaternion.identity);
+
+                ps.startColor = GetComponent<SpriteRenderer>().color;
+
                 // Stun player
                 if (!pc.stunned)
                 {
-                    Debug.Log(col.gameObject);
                     pc.stunned = true;
-                    pc.stunnedTimer = Time.time + 3f;
+                    pc.stunnedTimer = Time.time + 1f;
                 }
             }
         }
