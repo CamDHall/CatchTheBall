@@ -10,6 +10,7 @@ public class CamControl : MonoBehaviour {
     public int shakeTimer;
     public float shakeIntensity;
     public static CamControl me;
+
     // Use this for initialization
     void Start () {
         me = this;
@@ -36,5 +37,4 @@ public class CamControl : MonoBehaviour {
         shakeTimer = Mathf.Max(shakeTimer, time);
         shakeIntensity = Mathf.Max(shakeIntensity, intensity);
     }
-
 }

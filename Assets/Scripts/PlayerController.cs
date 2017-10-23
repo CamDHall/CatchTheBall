@@ -52,6 +52,11 @@ public class PlayerController : MonoBehaviour {
         // Check stun state
         if (stunnedTimer < Time.time)
             stunned = false;
+
+        if (stunned)
+            bCollider.enabled = false;
+        else
+            bCollider.enabled = true;
     }
 
     void FixedUpdate () {
@@ -145,7 +150,12 @@ public class PlayerController : MonoBehaviour {
                 col.gameObject.GetComponent<PlayerController>().tagBackTimer = Time.time + 1.5f;
                 BallController.Instance.ParentBall(col.gameObject, this.gameObject);
 
-                ps.startColor = GetComponent<SpriteRenderer>().color;
+                // Zoom
+                CamControl.me.Shake(.25F, 1);
+
+                // Particles
+                ParticleSystem.MainModule boop = ps.main;
+                boop.startColor = GetComponent<SpriteRenderer>().color;
                 Instantiate(ps,transform.position, Quaternion.identity);
 
                 // Stun player

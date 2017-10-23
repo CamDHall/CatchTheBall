@@ -16,7 +16,6 @@ public class BallController : MonoBehaviour {
     public float decelerationSpeed;
     float force, decSpeed;
 
-
     Vector3 directionOfBall; // For throwing
 
     bool throwingBall = false, moving = false;
@@ -151,6 +150,7 @@ public class BallController : MonoBehaviour {
         if(col.gameObject.tag == "Player" && !throwingBall)
         {
             ParentBall(col.gameObject);
+            
         }
     }
 }
