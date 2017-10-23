@@ -123,6 +123,10 @@ public class PlayerController : MonoBehaviour {
         if(col.gameObject.tag == "Wall")
         {
             StartCoroutine("BouncePlayer");
+            Instantiate(ps, transform.position, Quaternion.identity);
+
+            ps.startColor = Color.grey;
+
             wallColliding = true;
         }
 
